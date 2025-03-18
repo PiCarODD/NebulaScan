@@ -1,0 +1,52 @@
+# Pentest Automation Configuration
+# 
+# This YAML file configures the pentest automation tool. It contains two main sections:
+# 1. env: Defines the target environments
+# 2. tools: Configures the tools to be executed
+#
+# Usage:
+# - Use {target} in the flags section to specify where the target should be inserted
+# - Tools with the same map value will run in parallel
+# - Tools are executed in order of their map value
+
+env:
+  - name: prod networks
+    type: io
+    value: 127.0.0.1
+    include: [httpx, nxc]
+  - name: qa networks
+    type: io
+    value: 10.10.1.0/24
+    exclude: [httpx]
+
+tools:
+  - name: nmap
+    type: tool
+    map: 1 # 1 mean it will run first
+    value: nmap
+    flags: -sV -sC -oN nmap.txt {target}
+    output: nmap_services.txt
+  - name: nuclei
+    type: tool
+    map: 1 # 1 mean it will run prarallel with nmap
+    value: nuclei
+    flags: -severity low,medium,high,critical -timeout 20 -u {target}
+    output: nuclei.txt
+  - name: httpx
+    type: tool
+    map: 2 # 2 mean it will run after finished map1's tools
+    value: httpx
+    flags: -silent -timeout 20 -threads 100 -output httpx.txt -u {target}
+    output: httpx.txt
+  - name: nxc
+    type: tool
+    map: 1 # 1 mean it will run parallel with nmap and nuclei
+    value: nxc
+    flags: ftp {target} -u apc -p apc
+    output: nxc.txt
+  - name: nxc
+    type: tool
+    map: 2 # 2 mean it will run after finished map1's tools and will run parallel with httpx
+    value: nxc
+    flags: smb {target} -u apc -p apc
+    output: nxc.txt
