@@ -4,8 +4,6 @@ import multiprocessing
 import sys
 import os
 import signal
-import time
-import psutil
 
 # Global event to track interruption
 interrupt_event = multiprocessing.Event()
@@ -16,7 +14,7 @@ def signal_handler(sig, frame):
     os.killpg(os.getpgid(os.getpid()), signal.SIGTERM)
     sys.exit(0)
 
-def run_tool(tool, target):
+def run_tool(tool, target, output_dir):
     try:
         print(f"\n\033[1;34m[+] Executing {tool['name']} on {target}\033[0m")
         
@@ -27,7 +25,13 @@ def run_tool(tool, target):
         print(f"\033[1;32mCommand:\033[0m {' '.join(command)}")
         
         # Create output file path
-        output_file = f"{target.replace('/', '_')}_{tool['output']}"
+        output_file = os.path.join(output_dir, tool['output'])
+        
+        # Set timeout based on the tool and target
+        if tool['name'] == 'nmap' and '/' in target:  # CIDR notation
+            timeout = 3600 * 4  # 4 hours for network scans
+        else:
+            timeout = 3600  # 1 hour for other scans
         
         # Create a new process group
         with open(output_file, 'w') as f:
@@ -39,11 +43,15 @@ def run_tool(tool, target):
             
             # Wait for process completion with timeout
             try:
-                _, stderr = process.communicate(timeout=3600)  # 1 hour timeout
+                _, stderr = process.communicate(timeout=timeout)
             except subprocess.TimeoutExpired:
-                print(f"\033[1;33m[!] {tool['name']} timed out, terminating...\033[0m")
+                print(f"\033[1;33m[!] {tool['name']} timed out after {timeout//3600} hours, terminating...\033[0m")
                 os.killpg(os.getpgid(process.pid), signal.SIGTERM)
                 _, stderr = process.communicate()
+                # Save partial results
+                with open(output_file + '.partial', 'w') as f:
+                    f.write(process.stdout.read())
+                print(f"\033[1;36mPartial results saved to: {output_file}.partial\033[0m")
             
             if process.returncode != 0:
                 print(f"\033[1;31m[-] Error in {tool['name']}:\033[0m {stderr}")
@@ -61,7 +69,13 @@ def run_tool(tool, target):
 
 def process_target(tools, target, include=None, exclude=None):
     try:
+        # Create output directory for this target
+        # Replace / with _ in folder name to handle CIDR notation
+        output_dir = target.replace('/', '_')
+        os.makedirs(output_dir, exist_ok=True)
+        
         print(f"\n\033[1;33m[+] Starting Pentest on {target}\033[0m")
+        print(f"\033[1;33m[+] Output will be saved in: {output_dir}\033[0m")
         print("\033[1;33m====================================\033[0m")
         
         # Filter tools based on include/exclude
@@ -85,7 +99,7 @@ def process_target(tools, target, include=None, exclude=None):
             print(f"\n\033[1;35m[+] Running Group {group} Tools on {target}\033[0m")
             processes = []
             for tool in tool_groups[group]:
-                p = multiprocessing.Process(target=run_tool, args=(tool, target))
+                p = multiprocessing.Process(target=run_tool, args=(tool, target, output_dir))
                 processes.append(p)
                 p.start()
             
