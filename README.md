@@ -1,6 +1,7 @@
-# Multi-Universe Pentest Automation 🚀
+# NebulaScan Pentest Automation 🚀
+<img src="https://i.postimg.cc/c4LZrq8D/Adobe-Express-file.png" alt="NebulaScan" height="500" width="1200"/>
 
-Multi-Universe is a powerful pentest automation tool that allows you to run multiple security tools in parallel across different environments. It's designed to make your pentesting workflow more efficient and organized.
+NebulaScan is a powerful pentest automation tool that allows you to run multiple security tools in parallel across different environments. It's designed to make your pentesting workflow more efficient and organized.
 
 ## Features
 
@@ -14,7 +15,7 @@ Multi-Universe is a powerful pentest automation tool that allows you to run mult
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/PiCaroDD/multi-universe.git
+   git clone https://github.com/PiCaroDD/NebulaScan.git
    cd multi-universe
    ```
 
