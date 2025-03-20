@@ -18,8 +18,11 @@ def run_tool(tool, target, output_dir):
     try:
         print(f"\n\033[1;34m[+] Executing {tool['name']} on {target}\033[0m")
         
-        # Replace {target} in the flags
-        flags = tool['flags'].format(target=target)
+        # Replace {target} in the flags if it exists
+        flags = tool['flags']
+        if '{target}' in flags:
+            flags = flags.format(target=target)
+        
         command = [tool['value']] + flags.split()
         
         print(f"\033[1;32mCommand:\033[0m {' '.join(command)}")
