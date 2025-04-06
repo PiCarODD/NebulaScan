@@ -1,5 +1,5 @@
 # NebulaScan Pentest Automation 🚀
-<img src="https://i.postimg.cc/c4LZrq8D/Adobe-Express-file.png" alt="NebulaScan" height="500" width="1200"/>
+![NebulaScan Logo](NebulaScan.png)
 
 NebulaScan is a powerful pentest automation tool that allows you to run multiple security tools in parallel across different environments. It's designed to make your pentesting workflow more efficient and organized.
 
