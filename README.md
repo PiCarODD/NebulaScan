@@ -16,7 +16,7 @@ NebulaScan is a powerful pentest automation tool that allows you to run multiple
 1. Clone the repository:
    ```bash
    git clone https://github.com/PiCaroDD/NebulaScan.git
-   cd multi-universe
+   cd NebulaScan
    ```
 
 2. Install Python dependencies:
@@ -29,7 +29,7 @@ NebulaScan is a powerful pentest automation tool that allows you to run multiple
 ## Usage
 
 ```bash
-python multi-universe.py -c config.yml
+python NebulaScan.py -c config.yml
 ```
 
 ## Configuration 
