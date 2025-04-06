@@ -11,6 +11,9 @@ NebulaScan is a powerful pentest automation tool that allows you to run multiple
 - **Automated Output**: Save results to organized files
 - **Flexible Configuration**: Easy-to-use YAML configuration
 
+## WorkFlow
+![NebulaScan workflow](workflow.png)
+
 ## Installation 
 
 1. Clone the repository:
